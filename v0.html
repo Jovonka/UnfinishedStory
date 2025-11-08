@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Video Scene</title>
+<style>
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden;
+  background: black;
+}
+
+/* Fullscreen responsive video */
+video {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: translate(-50%, -50%);
+  z-index: 0;
+  opacity: 0;
+  transition: opacity 3s ease; /* slow fade-in */
+}
+
+/* Black overlay for initial fade-in */
+#black-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: black;
+  opacity: 1;
+  pointer-events: none;
+  transition: opacity 3s ease;
+  z-index: 2;
+}
+</style>
+</head>
+<body>
+
+<video id="sceneVideo" autoplay muted playsinline>
+  <source src="Video.mp4" type="video/mp4">
+  Your browser does not support the video tag.
+</video>
+
+<div id="black-overlay"></div>
+
+<script>
+const video = document.getElementById("sceneVideo");
+const overlay = document.getElementById("black-overlay");
+
+// ✅ Start fade-in even before video fully loads
+window.addEventListener("load", () => {
+  setTimeout(() => {
+    video.style.opacity = "1";    // fade in video
+    overlay.style.opacity = "0";  // fade out overlay
+  }, 500); // slight delay for smoother effect
+});
+
+// ✅ Fade out video/audio and go to page3.html
+setTimeout(() => {
+  // fade audio
+  const fadeAudio = setInterval(() => {
+    if (video.volume > 0.05) {
+      video.volume -= 0.05;
+    } else {
+      video.volume = 0;
+      clearInterval(fadeAudio);
+    }
+  }, 200);
+
+  // fade to black
+  overlay.style.transition = "opacity 3s ease";
+  overlay.style.opacity = "1";
+}, 18000); // 28 seconds
+
+// ✅ Redirect after fade completes
+setTimeout(() => {
+  window.location.href = "page2.html";
+}, 20000); // 30 seconds
+</script>
+
+</body>
+</html>
