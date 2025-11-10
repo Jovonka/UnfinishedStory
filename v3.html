@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Video Scene</title>
+<title>Jesus Heals the Blind Man</title>
 <style>
 html, body {
   margin: 0;
@@ -23,11 +23,9 @@ video {
   object-fit: cover;
   transform: translate(-50%, -50%);
   z-index: 0;
-  opacity: 0;
-  transition: opacity 3s ease; /* slow fade-in */
 }
 
-/* Black overlay for initial fade-in */
+/* Black overlay for fade-out at the end */
 #black-overlay {
   position: fixed;
   top: 0;
@@ -35,17 +33,17 @@ video {
   width: 100%;
   height: 100%;
   background: black;
-  opacity: 1;
+  opacity: 0;
   pointer-events: none;
-  transition: opacity 3s ease;
+  transition: opacity 1.5s ease;
   z-index: 2;
 }
 </style>
 </head>
 <body>
 
-<video id="sceneVideo" autoplay muted playsinline>
-  <source src="Video.mp4" type="video/mp4">
+<video id="sceneVideo" controls playsinline>
+  <source src="v3.mp4" type="video/mp4">
   Your browser does not support the video tag.
 </video>
 
@@ -54,36 +52,50 @@ video {
 <script>
 const video = document.getElementById("sceneVideo");
 const overlay = document.getElementById("black-overlay");
+let started = false;
 
-// ✅ Start fade-in even before video fully loads
-window.addEventListener("load", () => {
-  setTimeout(() => {
-    video.style.opacity = "1";    // fade in video
-    overlay.style.opacity = "0";  // fade out overlay
-  }, 500); // slight delay for smoother effect
+// Play from start only on first click
+video.addEventListener("click", async () => {
+  if (!started) {
+    video.currentTime = 0; // start at beginning only once
+    started = true;
+  }
+  try {
+    await video.play();
+  } catch (err) {
+    console.warn("Playback interrupted:", err);
+  }
 });
 
-// ✅ Fade out video/audio and go to page3.html
-setTimeout(() => {
-  // fade audio
-  const fadeAudio = setInterval(() => {
-    if (video.volume > 0.05) {
-      video.volume -= 0.05;
-    } else {
-      video.volume = 0;
-      clearInterval(fadeAudio);
-    }
-  }, 200);
+// Allow pause/resume naturally — no reset
+video.addEventListener("pause", () => {
+  // Nothing special — just pauses at current time
+});
 
-  // fade to black
-  overlay.style.transition = "opacity 3s ease";
-  overlay.style.opacity = "1";
-}, 18000); // 28 seconds
+// Fade out audio + screen near the end
+video.addEventListener("timeupdate", () => {
+  if (video.duration - video.currentTime <= 2 && !video.dataset.fadingOut) {
+    video.dataset.fadingOut = "true";
 
-// ✅ Redirect after fade completes
-setTimeout(() => {
-  window.location.href = "page4.html";
-}, 20000); // 30 seconds
+    // Fade out audio
+    const fadeAudio = setInterval(() => {
+      if (video.volume > 0.05) {
+        video.volume -= 0.05;
+      } else {
+        video.volume = 0;
+        clearInterval(fadeAudio);
+      }
+    }, 100);
+
+    // Fade screen to black
+    overlay.style.opacity = "1";
+  }
+});
+
+// Redirect when video ends
+video.addEventListener("ended", () => {
+  window.location.href = "end.html";
+});
 </script>
 
 </body>
