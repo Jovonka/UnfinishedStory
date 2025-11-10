@@ -19,22 +19,7 @@
     background-color: #ffffff;
   }
   
-  /* ✅ Fade-in overlay at start */
-  #black-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: #000;
-    z-index: 9999;
-    opacity: 1;
-    transition: opacity 3s ease;
-  }
-  #black-overlay.fade-out {
-    opacity: 0;
-    pointer-events: none;
-  }
+
   
   /* ✅ Fullscreen parallax background */
   .parallax-bg {
@@ -187,8 +172,7 @@
 </head>
 
 <body>
-  <!-- ✅ Black overlay intro -->
-  <div id="black-overlay"></div>
+
 
   <!-- ✅ Fullscreen parallax -->
   <div class="parallax-bg" id="parallax">
@@ -223,13 +207,13 @@
 <script>
 const textParagraphs = document.querySelectorAll(".text-container p");
 const parallax = document.getElementById("parallax");
-const overlay = document.getElementById("black-overlay");
+
 const scrollIndicator = document.getElementById("scrollIndicator");
 
 // ✅ Fade in sequence
 window.addEventListener("load", () => {
-  setTimeout(() => overlay.classList.add("fade-out"), 1000);
-  setTimeout(() => parallax.classList.add("loaded"), 2500);
+  setTimeout(() => overlay.classList.add("fade-out"), );
+  setTimeout(() => parallax.classList.add("loaded"), );
 });
 
 // ✅ Fade in text on scroll

@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Jesus Heals the Blind Man</title>
 <style>
 html, body {
@@ -13,7 +13,7 @@ html, body {
   background: black;
 }
 
-/* Fullscreen responsive video */
+/* Fullscreen video */
 video {
   position: fixed;
   top: 50%;
@@ -25,18 +25,31 @@ video {
   z-index: 0;
 }
 
-/* Black overlay for fade-out at the end */
-#black-overlay {
+/* Continue button (hidden at first) */
+#continue-btn {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: black;
+  bottom: 40px;
+  right: 40px; /* your right side */
+  background: white;
+  color: black;
+  font-size: 1.8rem;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  text-decoration: none;
   opacity: 0;
-  pointer-events: none;
   transition: opacity 1.5s ease;
-  z-index: 2;
+  z-index: 3;
+}
+
+#continue-btn.show {
+  opacity: 1;
+}
+
+#continue-btn:hover {
+  background: black;
+  color: white;
 }
 </style>
 </head>
@@ -47,17 +60,18 @@ video {
   Your browser does not support the video tag.
 </video>
 
-<div id="black-overlay"></div>
+<a id="continue-btn" href="page4.html">Continue →</a>
 
 <script>
 const video = document.getElementById("sceneVideo");
-const overlay = document.getElementById("black-overlay");
+const continueBtn = document.getElementById("continue-btn");
 let started = false;
+let buttonShown = false;
 
-// Play from start only on first click
+// ✅ Start video at beginning only once on first click
 video.addEventListener("click", async () => {
   if (!started) {
-    video.currentTime = 0; // start at beginning only once
+    video.currentTime = 0;
     started = true;
   }
   try {
@@ -67,34 +81,14 @@ video.addEventListener("click", async () => {
   }
 });
 
-// Allow pause/resume naturally — no reset
-video.addEventListener("pause", () => {
-  // Nothing special — just pauses at current time
-});
+// ✅ Allow pause/resume normally — keeps current position
 
-// Fade out audio + screen near the end
+// ✅ Show "Continue" button near end (3s before finish)
 video.addEventListener("timeupdate", () => {
-  if (video.duration - video.currentTime <= 2 && !video.dataset.fadingOut) {
-    video.dataset.fadingOut = "true";
-
-    // Fade out audio
-    const fadeAudio = setInterval(() => {
-      if (video.volume > 0.05) {
-        video.volume -= 0.05;
-      } else {
-        video.volume = 0;
-        clearInterval(fadeAudio);
-      }
-    }, 100);
-
-    // Fade screen to black
-    overlay.style.opacity = "1";
+  if (!buttonShown && video.duration - video.currentTime <= 3) {
+    buttonShown = true;
+    continueBtn.classList.add("show");
   }
-});
-
-// Redirect when video ends
-video.addEventListener("ended", () => {
-  window.location.href = "end.html";
 });
 </script>
 
