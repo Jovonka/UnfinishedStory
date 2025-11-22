@@ -21,7 +21,7 @@ html, body {
   display: none;
 }
 
-/* Desktop / tablet video (screens 768px and up) */
+/* Desktop / tablet video (768px+) */
 @media (min-width: 768px) {
   #video-desktop {
     display: block;
@@ -33,14 +33,14 @@ html, body {
   }
 }
 
-/* Mobile video (screens under 768px) */
+/* Mobile video (<768px) */
 @media (max-width: 767px) {
   #video-mobile {
     display: block;
   }
 }
 
-/* Fullscreen video styling */
+/* Global video styling */
 video {
   position: fixed;
   top: 50%;
@@ -97,19 +97,29 @@ video {
 const desktopVid = document.getElementById("video-desktop");
 const mobileVid = document.getElementById("video-mobile");
 
-// Choose which video is actually displayed
-const video = window.innerWidth < 768 ? mobileVid : desktopVid;
-
 const continueBtn = document.getElementById("continue-btn");
 let buttonShown = false;
 
-// Reset video to start on load + ensure it doesn't autoplay
+// Pick correct video
+const video = window.innerWidth < 768 ? mobileVid : desktopVid;
+
+// Disable the OTHER video fully (prevents GitHub Pages bug)
+if (video === desktopVid) {
+  mobileVid.removeAttribute("src");
+  mobileVid.load();
+} else {
+  desktopVid.removeAttribute("src");
+  desktopVid.load();
+}
+
+// Reset video completely on load
 window.addEventListener("load", () => {
-  video.currentTime = 0;
   video.pause();
+  video.currentTime = 0;
+  video.load(); // FULL restart of the video player
 });
 
-// Show continue button 3 seconds before end
+// Show the Continue button near the end
 video.addEventListener("timeupdate", () => {
   if (!buttonShown && video.duration - video.currentTime <= 3) {
     buttonShown = true;

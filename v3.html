@@ -4,55 +4,51 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Jesus Heals the Blind Man</title>
+
 <style>
 html, body {
   margin: 0;
   padding: 0;
   height: 100%;
   font-family: "Josefin Sans", sans-serif;
-  font-weight: 500;
-  font-style: normal;
-  overflow: hidden;
   background: black;
+  overflow: hidden;
 }
 
 /* Hide both by default */
-#video-desktop, #video-mobile {
+#video-desktop, 
+#video-mobile {
   display: none;
 }
 
-/* Desktop / tablet video (screens 768px and up) */
+/* Desktop/tablet */
 @media (min-width: 768px) {
   #video-desktop {
     display: block;
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    background: black;
-    transform: translate(-50%, -50%);
   }
 }
 
-/* Mobile video (screens under 768px) */
+/* Mobile */
 @media (max-width: 767px) {
   #video-mobile {
     display: block;
   }
 }
 
-/* Fullscreen video styling */
+/* Fullscreen video settings */
 video {
   position: fixed;
   top: 50%;
   left: 50%;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+  width: 100vw;
+  height: 100vh;
   transform: translate(-50%, -50%);
+  object-fit: contain;  /* keep 1920x1080 perfectly visible */
+  background: black;
   z-index: 0;
 }
 
-/* Continue button */
+/* Continue Button */
 #continue-btn {
   position: fixed;
   top: 20px;
@@ -79,6 +75,7 @@ video {
 }
 </style>
 </head>
+
 <body>
 
 <!-- Desktop video -->
@@ -97,19 +94,20 @@ video {
 const desktopVid = document.getElementById("video-desktop");
 const mobileVid = document.getElementById("video-mobile");
 
-// Pick correct video based on screen size
+// Select correct video
 const video = window.innerWidth < 768 ? mobileVid : desktopVid;
 
+// Continue button
 const continueBtn = document.getElementById("continue-btn");
 let buttonShown = false;
 
-// Reset to start and prevent autoplay
+// Prevent autoplay; reset to start
 window.addEventListener("load", () => {
   video.currentTime = 0;
   video.pause();
 });
 
-// Show continue button 3s before end
+// Reveal button 3 seconds before end
 video.addEventListener("timeupdate", () => {
   if (!buttonShown && video.duration - video.currentTime <= 3) {
     buttonShown = true;
