@@ -4,66 +4,67 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Jesus Heals the Blind Man</title>
+
 <style>
 html, body {
   margin: 0;
   padding: 0;
   height: 100%;
-  font-family: "Josefin Sans", sans-serif;
-  font-weight: 500;
-  font-style: normal;
-  overflow: hidden;
   background: black;
+  overflow: hidden;
+  font-family: "Josefin Sans", sans-serif;
 }
 
 /* Hide both by default */
-#video-desktop, #video-mobile {
+#video-desktop,
+#video-mobile {
   display: none;
 }
 
-/* Desktop / tablet video (768px+) */
+/* Desktop video: 768px+ */
 @media (min-width: 768px) {
   #video-desktop {
     display: block;
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    background: black;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    width: 100vw;
+    height: 100vh;
     transform: translate(-50%, -50%);
+    object-fit: contain; /* keep 1920x1080 visible */
+    background: black;
+    z-index: 0;
   }
 }
 
-/* Mobile video (<768px) */
+/* Mobile video: under 768px */
 @media (max-width: 767px) {
   #video-mobile {
     display: block;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    width: 100vw;
+    height: 100vh;
+    transform: translate(-50%, -50%);
+    object-fit: cover;
+    background: black;
+    z-index: 0;
   }
 }
 
-/* Global video styling */
-video {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transform: translate(-50%, -50%);
-  z-index: 0;
-}
-
-/* Continue button */
+/* Continue Button */
 #continue-btn {
   position: fixed;
   top: 20px;
   right: 20px;
   background: white;
   color: black;
-  font-size: 1rem;
   padding: 10px 12px;
+  font-size: 1rem;
+  text-decoration: none;
   border: none;
   cursor: pointer;
-  text-decoration: none;
   opacity: 0;
   transition: opacity 1.5s ease;
   z-index: 3;
@@ -79,15 +80,16 @@ video {
 }
 </style>
 </head>
+
 <body>
 
-<!-- Desktop video -->
-<video id="video-desktop" class="sceneVideo" controls playsinline muted>
+<!-- DESKTOP video -->
+<video id="video-desktop" controls playsinline muted>
   <source src="videos/V2.mp4" type="video/mp4">
 </video>
 
-<!-- Mobile video -->
-<video id="video-mobile" class="sceneVideo" controls playsinline muted>
+<!-- MOBILE video -->
+<video id="video-mobile" controls playsinline muted>
   <source src="videos/V2.1.mp4" type="video/mp4">
 </video>
 
@@ -100,26 +102,28 @@ const mobileVid = document.getElementById("video-mobile");
 const continueBtn = document.getElementById("continue-btn");
 let buttonShown = false;
 
-// Pick correct video
+// Pick correct video based on width
 const video = window.innerWidth < 768 ? mobileVid : desktopVid;
 
-// Disable the OTHER video fully (prevents GitHub Pages bug)
+// Disable the wrong video completely (fix for GitHub Pages)
 if (video === desktopVid) {
+  mobileVid.pause();
   mobileVid.removeAttribute("src");
   mobileVid.load();
 } else {
+  desktopVid.pause();
   desktopVid.removeAttribute("src");
   desktopVid.load();
 }
 
-// Reset video completely on load
+// Reset chosen video fully on load
 window.addEventListener("load", () => {
   video.pause();
   video.currentTime = 0;
-  video.load(); // FULL restart of the video player
+  video.load();
 });
 
-// Show the Continue button near the end
+// Show the continue button 3 sec before end
 video.addEventListener("timeupdate", () => {
   if (!buttonShown && video.duration - video.currentTime <= 3) {
     buttonShown = true;

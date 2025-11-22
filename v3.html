@@ -21,10 +21,19 @@ html, body {
   display: none;
 }
 
-/* Desktop/tablet */
+/* Desktop / tablet */
 @media (min-width: 768px) {
   #video-desktop {
     display: block;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    width: 100vw;
+    height: 100vh;
+    transform: translate(-50%, -50%);
+    object-fit: contain; /* keep full 1920x1080 */
+    background: black;
+    z-index: 0;
   }
 }
 
@@ -32,20 +41,16 @@ html, body {
 @media (max-width: 767px) {
   #video-mobile {
     display: block;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    width: 100vw;
+    height: 100vh;
+    transform: translate(-50%, -50%);
+    object-fit: cover; /* fill phone screen */
+    background: black;
+    z-index: 0;
   }
-}
-
-/* Fullscreen video settings */
-video {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  width: 100vw;
-  height: 100vh;
-  transform: translate(-50%, -50%);
-  object-fit: contain;  /* keep 1920x1080 perfectly visible */
-  background: black;
-  z-index: 0;
 }
 
 /* Continue Button */
@@ -55,8 +60,8 @@ video {
   right: 20px;
   background: white;
   color: black;
-  font-size: 1rem;
   padding: 10px 12px;
+  font-size: 1rem;
   border: none;
   cursor: pointer;
   text-decoration: none;
@@ -101,13 +106,28 @@ const video = window.innerWidth < 768 ? mobileVid : desktopVid;
 const continueBtn = document.getElementById("continue-btn");
 let buttonShown = false;
 
-// Prevent autoplay; reset to start
+/* ---- IMPORTANT FIX ----
+   Disable the video that is NOT being used.
+   GitHub Pages loads both and breaks playback.
+*/
+if (video === desktopVid) {
+  mobileVid.pause();
+  mobileVid.removeAttribute("src");
+  mobileVid.load();
+} else {
+  desktopVid.pause();
+  desktopVid.removeAttribute("src");
+  desktopVid.load();
+}
+
+// Reset video to the beginning on page load
 window.addEventListener("load", () => {
   video.currentTime = 0;
   video.pause();
+  video.load(); // FULL reset
 });
 
-// Reveal button 3 seconds before end
+// Reveal button 3s before end of video
 video.addEventListener("timeupdate", () => {
   if (!buttonShown && video.duration - video.currentTime <= 3) {
     buttonShown = true;
