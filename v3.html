@@ -10,18 +10,18 @@ html, body {
   margin: 0;
   padding: 0;
   height: 100%;
-  font-family: "Josefin Sans", sans-serif;
   background: black;
   overflow: hidden;
+  font-family: "Josefin Sans", sans-serif;
 }
 
 /* Hide both by default */
-#video-desktop, 
+#video-desktop,
 #video-mobile {
   display: none;
 }
 
-/* Desktop / tablet */
+/* Desktop video: 768px+ */
 @media (min-width: 768px) {
   #video-desktop {
     display: block;
@@ -31,13 +31,13 @@ html, body {
     width: 100vw;
     height: 100vh;
     transform: translate(-50%, -50%);
-    object-fit: contain; /* keep full 1920x1080 */
+    object-fit: contain; /* keep 1920x1080 visible */
     background: black;
     z-index: 0;
   }
 }
 
-/* Mobile */
+/* Mobile video: under 768px */
 @media (max-width: 767px) {
   #video-mobile {
     display: block;
@@ -47,7 +47,7 @@ html, body {
     width: 100vw;
     height: 100vh;
     transform: translate(-50%, -50%);
-    object-fit: cover; /* fill phone screen */
+    object-fit: cover;
     background: black;
     z-index: 0;
   }
@@ -62,9 +62,9 @@ html, body {
   color: black;
   padding: 10px 12px;
   font-size: 1rem;
+  text-decoration: none;
   border: none;
   cursor: pointer;
-  text-decoration: none;
   opacity: 0;
   transition: opacity 1.5s ease;
   z-index: 3;
@@ -83,13 +83,13 @@ html, body {
 
 <body>
 
-<!-- Desktop video -->
-<video id="video-desktop" class="sceneVideo" controls playsinline muted>
+<!-- DESKTOP video -->
+<video id="video-desktop" controls playsinline muted>
   <source src="V3.mp4" type="video/mp4">
 </video>
 
-<!-- Mobile video -->
-<video id="video-mobile" class="sceneVideo" controls playsinline muted>
+<!-- MOBILE video -->
+<video id="video-mobile" controls playsinline muted>
   <source src="V3.1.mp4" type="video/mp4">
 </video>
 
@@ -99,17 +99,13 @@ html, body {
 const desktopVid = document.getElementById("video-desktop");
 const mobileVid = document.getElementById("video-mobile");
 
-// Select correct video
-const video = window.innerWidth < 768 ? mobileVid : desktopVid;
-
-// Continue button
 const continueBtn = document.getElementById("continue-btn");
 let buttonShown = false;
 
-/* ---- IMPORTANT FIX ----
-   Disable the video that is NOT being used.
-   GitHub Pages loads both and breaks playback.
-*/
+// Pick correct video based on width
+const video = window.innerWidth < 768 ? mobileVid : desktopVid;
+
+// Disable the wrong video completely (fix for GitHub Pages)
 if (video === desktopVid) {
   mobileVid.pause();
   mobileVid.removeAttribute("src");
@@ -120,14 +116,14 @@ if (video === desktopVid) {
   desktopVid.load();
 }
 
-// Reset video to the beginning on page load
+// Reset chosen video fully on load
 window.addEventListener("load", () => {
-  video.currentTime = 0;
   video.pause();
-  video.load(); // FULL reset
+  video.currentTime = 0;
+  video.load();
 });
 
-// Reveal button 3s before end of video
+// Show the continue button 3 sec before end
 video.addEventListener("timeupdate", () => {
   if (!buttonShown && video.duration - video.currentTime <= 3) {
     buttonShown = true;
