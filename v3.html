@@ -9,11 +9,38 @@ html, body {
   margin: 0;
   padding: 0;
   height: 100%;
+  font-family: "Josefin Sans", sans-serif;
+  font-weight: 500;
+  font-style: normal;
   overflow: hidden;
   background: black;
 }
 
-/* Fullscreen video */
+/* Hide both by default */
+#video-desktop, #video-mobile {
+  display: none;
+}
+
+/* Desktop / tablet video (screens 768px and up) */
+@media (min-width: 768px) {
+  #video-desktop {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;   /* show entire video */
+    background: black;     /* letterbox bars */
+    transform: translate(-50%, -50%);
+  }
+}
+
+/* Mobile video (screens under 768px) */
+@media (max-width: 767px) {
+  #video-mobile {
+    display: block;
+  }
+}
+
+/* Fullscreen video styling */
 video {
   position: fixed;
   top: 50%;
@@ -25,17 +52,16 @@ video {
   z-index: 0;
 }
 
-/* Continue button (hidden at first) */
+/* Continue button */
 #continue-btn {
   position: fixed;
-  bottom: 40px;
-  right: 40px; /* your right side */
+  top: 20px;
+  right: 20px;
   background: white;
   color: black;
-  font-size: 1.8rem;
-  padding: 12px 24px;
+  font-size: 1rem;
+  padding: 10px 12px;
   border: none;
-  border-radius: 10px;
   cursor: pointer;
   text-decoration: none;
   opacity: 0;
@@ -55,35 +81,29 @@ video {
 </head>
 <body>
 
-<video id="sceneVideo" controls playsinline>
-  <source src="v3.mp4" type="video/mp4">
-  Your browser does not support the video tag.
+<!-- Desktop video -->
+<video id="video-desktop" class="sceneVideo" controls playsinline autoplay muted>
+  <source src="V3.mp4" type="video/mp4">
 </video>
 
-<a id="continue-btn" href="page4.html">Continue →</a>
+<!-- Mobile video -->
+<video id="video-mobile" class="sceneVideo" controls playsinline autoplay muted>
+  <source src="V3.1.mp4" type="video/mp4">
+</video>
+
+<a id="continue-btn" href="end.html">Continue</a>
 
 <script>
-const video = document.getElementById("sceneVideo");
+const desktopVid = document.getElementById("video-desktop");
+const mobileVid = document.getElementById("video-mobile");
+
+// whichever is visible gets used
+const video = window.innerWidth < 768 ? mobileVid : desktopVid;
+
 const continueBtn = document.getElementById("continue-btn");
-let started = false;
 let buttonShown = false;
 
-// ✅ Start video at beginning only once on first click
-video.addEventListener("click", async () => {
-  if (!started) {
-    video.currentTime = 0;
-    started = true;
-  }
-  try {
-    await video.play();
-  } catch (err) {
-    console.warn("Playback interrupted:", err);
-  }
-});
-
-// ✅ Allow pause/resume normally — keeps current position
-
-// ✅ Show "Continue" button near end (3s before finish)
+// Show continue button 3 seconds before the end
 video.addEventListener("timeupdate", () => {
   if (!buttonShown && video.duration - video.currentTime <= 3) {
     buttonShown = true;
