@@ -27,8 +27,8 @@ html, body {
     display: block;
     width: 100%;
     height: 100%;
-    object-fit: contain;   /* show entire video */
-    background: black;     /* letterbox bars */
+    object-fit: contain;
+    background: black;
     transform: translate(-50%, -50%);
   }
 }
@@ -82,12 +82,12 @@ video {
 <body>
 
 <!-- Desktop video -->
-<video id="video-desktop" class="sceneVideo" controls playsinline autoplay muted>
+<video id="video-desktop" class="sceneVideo" controls playsinline muted>
   <source src="V3.mp4" type="video/mp4">
 </video>
 
 <!-- Mobile video -->
-<video id="video-mobile" class="sceneVideo" controls playsinline autoplay muted>
+<video id="video-mobile" class="sceneVideo" controls playsinline muted>
   <source src="V3.1.mp4" type="video/mp4">
 </video>
 
@@ -97,13 +97,19 @@ video {
 const desktopVid = document.getElementById("video-desktop");
 const mobileVid = document.getElementById("video-mobile");
 
-// whichever is visible gets used
+// Pick correct video based on screen size
 const video = window.innerWidth < 768 ? mobileVid : desktopVid;
 
 const continueBtn = document.getElementById("continue-btn");
 let buttonShown = false;
 
-// Show continue button 3 seconds before the end
+// Reset to start and prevent autoplay
+window.addEventListener("load", () => {
+  video.currentTime = 0;
+  video.pause();
+});
+
+// Show continue button 3s before end
 video.addEventListener("timeupdate", () => {
   if (!buttonShown && video.duration - video.currentTime <= 3) {
     buttonShown = true;
